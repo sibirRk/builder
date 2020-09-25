@@ -16,10 +16,6 @@
   },
   "author": "",
   "license": "ISC",
-  "browserslist": [
-    "ie >= 9",
-    "last 8 version"
-  ],
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
