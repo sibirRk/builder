@@ -7,8 +7,9 @@ const SpriteLoaderPlugin = require('svg-sprite-loader/plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const ImageminPlugin = require('imagemin-webpack-plugin').default;
-const ServiceWorkerWebpackPlugin = require( 'serviceworker-webpack-plugin');
-
+const Dotenv = require('dotenv-webpack');
+const { VueLoaderPlugin } = require('vue-loader');
+const compiler = require('vue-template-compiler');
 
 let plugins = [];
 let page;
@@ -30,14 +31,11 @@ fs.readdirSync('./src/').forEach(file => {
   }
 });
 
+plugins.push(new Dotenv);
 plugins.push(
-  new HtmlWebPackPlugin({
-    template: `./src/list-template/${path.basename('list.pug', '.pug')}.pug`,
-    filename: `${path.basename('list.pug', '.pug')}.html`,
-    minify: true,
-    hash: true
-  })
+  new VueLoaderPlugin()
 );
+
 plugins.push(new MiniCssExtractPlugin({
   filename: "[name].css",
   chunkFilename: "[id].css"
@@ -46,7 +44,11 @@ plugins.push(new MiniCssExtractPlugin({
 plugins.push(new SpriteLoaderPlugin());
 
 plugins.push(new CopyWebpackPlugin([
-  {from: 'src/public', to: './'}
+  {
+    from: __dirname + '/src/static/',
+    to: './',
+    noErrorOnMissing: true
+  }
 ]));
 
 plugins.push(new ImageminPlugin({
@@ -55,12 +57,9 @@ plugins.push(new ImageminPlugin({
   }
 }));
 
-plugins.push( new ServiceWorkerWebpackPlugin({
-  entry: path.join(__dirname, 'src/sw/service-worker.js'),
-}),);
-
-
 module.exports = {
+  mode: 'production',
+  entry: ['babel-polyfill', './src/index.js'],
   devServer: {
     host: '0.0.0.0',
     port: '8080',
@@ -75,6 +74,12 @@ module.exports = {
   // },
   module: {
     rules: [
+      {
+        test: /\.vue$/,
+        use: [
+          'vue-loader',
+        ]
+      },
       {
         test: /\.js$/,
         exclude: /node_modules[\/\\](?!(swiper|dom7)[\/\\])/,
@@ -98,7 +103,7 @@ module.exports = {
               data: {
                 // JSON data here, see example below
                 // menu: require('./src/data/menu.json'),
-                linkslist: links
+                linkslist: links,
               },
               pretty: true
             }
@@ -178,7 +183,11 @@ module.exports = {
     ]
   },
   resolve: {
-    alias: {vue: 'vue/dist/vue.js'},
+    alias: {
+      '~': path.resolve(__dirname, './'),
+      '@': path.resolve(__dirname, 'src/'),
+      vue: 'vue/dist/vue.js',
+    },
     extensions: [ '.js' ]
   },
   plugins: plugins

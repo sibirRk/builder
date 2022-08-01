@@ -1,1 +1,1 @@
-// import '../icons/facebook.svg';
+// import './vk.svg';

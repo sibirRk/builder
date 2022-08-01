@@ -1,20 +1,23 @@
-include ../node_modules/bempug/index
-- BEMPUG.modifier = '_';
+extends ./layouts/default
+include ./modules/head/head
 
-//- blocks imports
-include ./blocks/head/head
-include ./blocks/header/header
-include ./blocks/footer/footer
-include ./blocks/section/section
-
-doctype html
-html
+block head
   +head({
-    title: 'Главная'
+    title: 'Список страниц | Высота'
   })
-  body.main
-    +header({})
-    main.content
-      +section({})
+    
+block content
+  - 
+    pages = [
+      { href: '/main.html', title: 'Главная' },
+      { href: '/about.html', title: 'О нас' },
+    ]
 
-    +footer({})
+  .page
+    .container
+      ul.pages-list
+        for page in pages
+          li
+            a(href=page.href)= page.title
+
+  <style> body { margin-left: auto; margin-right: auto; } a { line-height: 1.5; font-size: 16px;} .page { padding-top: 50px; } .pages-list li { margin-bottom: 15px; }</style>
